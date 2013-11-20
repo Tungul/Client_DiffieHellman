@@ -1,0 +1,3 @@
+Title: Client_DiffieHellman
+Author: Lugnut (16807), Ipquarx (), and Greek2Me (11902)
+Client side manual diffie hellman implementation with OTP cipher
