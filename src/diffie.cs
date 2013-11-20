@@ -8,7 +8,7 @@ function Math_fastExpMod(%x, %e, %m) // should move this to ./lib/math.cs
 
 	%z = %x;
 
-	while(alessthanb("0", %e))
+	while(aLessThanB("0", %e))
 	{
 		if(Math_Mod(%e ,"2") !$= "0")
 		{
@@ -108,7 +108,9 @@ function DiffieHellman::alphaToNum(%this, %char)
 function DiffieHellman::numToAlpha(%this, %char)
 {
 
-}function Math_isPrime(%num) // this is the basic function, it needs to be implemented utilizing APA (Abritrary Precision Arithmetic).
+}
+
+function Math_isPrime(%num) // this is the basic function, it needs to be implemented utilizing APA (Abritrary Precision Arithmetic).
 {
 	if(%num $= "1" || %num $= "2" || %num $= "3") //Happy, Xalos?
 		return true;
@@ -123,7 +125,7 @@ function DiffieHellman::numToAlpha(%this, %char)
 
 	%squareRoot = Math_SquareRoot(%num); // oops we don't have one of these...
 
-	for(%i = "3"; Math_LessThan(%i, %squareRoot); %i = Math_Add(%i, 2)) // this can be sped up if we generate a set of primes using the sieve of eratsones, or just flat out include a list of primes from like, one to a million.
+	for(%i = "3"; aLessThanB(%i, %squareRoot); %i = Math_Add(%i, 2)) // this can be sped up if we generate a set of primes using the sieve of eratsones, or just flat out include a list of primes from like, one to a million.
 	{
 		if(Math_Mod(%num, %i) $= "0")
 		{
@@ -134,4 +136,4 @@ function DiffieHellman::numToAlpha(%this, %char)
 	return true;
 }
 
-// TODO: "Math_SquareRoot()" and "Math_LessThan()" or equivalent
+// TODO: "Math_SquareRoot()" or equivalent
