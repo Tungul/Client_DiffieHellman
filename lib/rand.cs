@@ -27,7 +27,7 @@ function rand(%id, %min, %max, %precision) {
 		%result = Math_Add(%min, Math_Multiply(%result, Math_Subtract(%max, %min)));
 	}
 
-	// if (%precision !$= "") { // removed and replaced to limit only to integers
+	// if (%precision !$= "") { // removed to limit only to integers
 	// 	%result = mFloatLength(%result, %precision); 
 	// }
 

@@ -64,6 +64,15 @@ function DiffieHellman::getOTPNums(%this, %num) // generates an arbitrary number
 	}
 }
 
+function DiffieHellman::getOTPNum(%this)
+{
+	%num = getField(%this.OTPNums, 0);
+
+	%this.OTPNums = removeField(%this.OTPNums, 0);
+
+	return %num;
+}
+
 function DiffieHellman::encrypt(%this, %str)
 {
 	for(%i = 0; %i < strLen(%str); %i++)
@@ -75,8 +84,13 @@ function DiffieHellman::encrypt(%this, %str)
 			continue;
 		}
 		%char = %this.alphaToNum(%char); // convert it to a numeral somehow. NOTE: only alphabetical characters. if it isn't alphabetical, strip it or make our OTP work with a large charset
-		%out = %this.numToAlpha((%char + getField(%this.OTPNums, 0)) % 26); // remove nums after use, get the first number
-		%outputStr = %outputStr @ %out;
+
+		%out = (%char + %this.getOTPNum()); // remove nums after use, get the first number
+
+		if(%out > 26) // ALTERNATELY USE XOR
+			%out -= 26;
+
+		%outputStr = %outputStr @ %this.numToAlpha(%out);
 	}
 
 	return %outputStr;
@@ -93,8 +107,13 @@ function DiffieHellman::decrypt(%this, %str)
 			continue;
 		}
 		%char = %this.alphaToNum(%char); // convert it to a numeral somehow. NOTE: only alphabetical characters. if it isn't alphabetical, strip it or make our OTP work with a large charset
-		// %out = %this.numToAlpha((%char + getField(%this.OTPNums, 0)) % 26); // remove nums after use, get the first number // DECRYPTION IS JUST REVERSE, YES? CHECK.
-		%outputStr = %outputStr @ %out;
+
+		%out = (%char - %this.getOTPNum()); // remove nums after use, get the first number
+
+		if(%out < 0) // ALTERNATELY USE XOR
+			%out += 26;
+
+		%outputStr = %outputStr @ %this.numToAlpha(%out);
 	}
 
 	return %outputStr;
@@ -102,12 +121,23 @@ function DiffieHellman::decrypt(%this, %str)
 
 function DiffieHellman::alphaToNum(%this, %char)
 {
-	
+	%alphabet = "a b c d e f g h i j k l m n o p q r s t u v w x y z";
+	%numbers = "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26";
+
+	for(%i = 0; %i < 26; %i++)
+	{
+		if(%char $= getWord(%alphabet, %i))
+		{
+			return %i;
+		}
+	}
 }
 
 function DiffieHellman::numToAlpha(%this, %char)
 {
+	%alphabet = "a b c d e f g h i j k l m n o p q r s t u v w x y z";
 
+	return getWord(%alphabet, %char); // shockingly simple
 }
 
 function Math_isPrime(%num) // this is the basic function, it needs to be implemented utilizing APA (Abritrary Precision Arithmetic).
@@ -123,7 +153,9 @@ function Math_isPrime(%num) // this is the basic function, it needs to be implem
 	else
 		return false; // holy shit this is so fucking inefficient and probably broken. i totally screwed something up here.
 
-	%squareRoot = Math_SquareRoot(%num); // oops we don't have one of these...
+	// %squareRoot = Math_SquareRoot(%num); // oops we don't have one of these...
+
+	%squareRoot = Math_DivideFloor(%num, 5); // best I can come up with.
 
 	for(%i = "3"; aLessThanB(%i, %squareRoot); %i = Math_Add(%i, 2)) // this can be sped up if we generate a set of primes using the sieve of eratsones, or just flat out include a list of primes from like, one to a million.
 	{
